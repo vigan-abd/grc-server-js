@@ -1,6 +1,6 @@
 {
   "name": "@vigan-abd/grc-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "grenache worker base for nodejs",
   "main": "index.js",
   "module": "index.mjs",
