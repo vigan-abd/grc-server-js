@@ -26,18 +26,17 @@
   },
   "homepage": "https://github.com/ThriveCoin/thc-grc-server-js#readme",
   "dependencies": {
-    "grenache-nodejs-http": "git+https://github.com/bitfinexcom/grenache-nodejs-http.git",
-    "grenache-nodejs-link": "git+https://github.com/bitfinexcom/grenache-nodejs-link.git",
-    "grenache-nodejs-ws": "git+https://github.com/bitfinexcom/grenache-nodejs-ws.git"
+    "grenache-nodejs-http": "^1.0.2",
+    "grenache-nodejs-link": "^1.0.2",
+    "grenache-nodejs-ws": "^1.0.0"
   },
   "devDependencies": {
-    "@thrivecoin/grc-client": "git+https://github.com/ThriveCoin/thc-grc-client-js.git",
-    "@thrivecoin/http-client": "git+https://github.com/ThriveCoin/thc-http-client-js.git",
-    "bfx-svc-test-helper": "git+https://github.com/bitfinexcom/bfx-svc-test-helper.git",
-    "mocha": "^10.0.0",
-    "mockdate": "^3.0.5",
-    "nyc": "^15.1.0",
-    "sinon": "^14.0.1",
-    "standard": "^16.0.3"
+    "@bitfinex/bfx-svc-test-helper": "^1.1.0",
+    "@thrivecoin/grc-client": "git+https://github.com/vigan-abd/thc-grc-client-js.git",
+    "mocha": "^11.7.6",
+    "node-fetch": "^2.7.0",
+    "nyc": "^18.0.0",
+    "sinon": "^22.0.0",
+    "standard": "^17.1.2"
   }
 }

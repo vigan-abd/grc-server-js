@@ -3,12 +3,11 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const createGrapes = require('bfx-svc-test-helper/grapes')
-const mockdate = require('mockdate')
+const createGrapes = require('@bitfinex/bfx-svc-test-helper/grapes')
 const sinon = require('sinon')
 const utils = require('util')
 const { GrcHttpClient } = require('@thrivecoin/grc-client')
-const { ThcHttpClient } = require('@thrivecoin/http-client')
+const fetch = require('node-fetch')
 const { GrcHttpWrk } = require('../')
 
 class SampleWrk extends GrcHttpWrk {
@@ -33,12 +32,13 @@ describe('grc.wrk.base.js tests', () => {
   const grape = 'http://127.0.0.1:30001'
   const svcName = 'rest:sample:wrk'
   const grcClient = new GrcHttpClient({ grape })
-  const httpClient = new ThcHttpClient({ baseUrl: 'http://127.0.0.1:7070' })
+  const baseUrl = 'http://127.0.0.1:7070'
   const grapes = createGrapes({})
   const wrk = new SampleWrk({ name: svcName, port: 7070, grape })
 
   let errLog = ''
   let errLogStub = null
+  let clock = null
 
   before(async function () {
     this.timeout(5000)
@@ -47,7 +47,7 @@ describe('grc.wrk.base.js tests', () => {
     grcClient.start()
     await wrk.start()
 
-    mockdate.set(1665843499038)
+    clock = sinon.useFakeTimers({ now: 1665843499038, toFake: ['Date'] })
     errLogStub = sinon.stub(console, 'error').callsFake((...params) => {
       errLog = utils.format(...params)
     })
@@ -64,7 +64,7 @@ describe('grc.wrk.base.js tests', () => {
     wrk.stop()
     await grapes.stop()
 
-    mockdate.reset()
+    clock.restore()
     errLogStub.restore()
   })
 
@@ -115,14 +115,15 @@ describe('grc.wrk.base.js tests', () => {
   })
 
   it('should reject request coming with wrong service name', async () => {
-    const { body: res } = await httpClient.post('', {
-      body: [
+    const res = await fetch(baseUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify([
         '675830ae-0498-4036-9d79-92bb1d1f9803',
         'rest:wrong:wrk',
         { action: 'ping', args: ['john', 'hi'] }
-      ],
-      encoding: 'json'
-    })
+      ])
+    }).then((res) => res.json())
 
     assert.deepStrictEqual(res, [
       '675830ae-0498-4036-9d79-92bb1d1f9803',
@@ -132,14 +133,15 @@ describe('grc.wrk.base.js tests', () => {
   })
 
   it('should reject request coming with wrong payload', async () => {
-    const { body: res } = await httpClient.post('', {
-      body: [
+    const res = await fetch(baseUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify([
         '675830ae-0498-4036-9d79-92bb1d1f9803',
         svcName,
         'ping'
-      ],
-      encoding: 'json'
-    })
+      ])
+    }).then((res) => res.json())
 
     assert.deepStrictEqual(res, [
       '675830ae-0498-4036-9d79-92bb1d1f9803',

@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const createGrapes = require('bfx-svc-test-helper/grapes')
+const createGrapes = require('@bitfinex/bfx-svc-test-helper/grapes')
 const { GrcHttpClient } = require('@thrivecoin/grc-client')
 const { GrcHttpWrk } = require('../')
 

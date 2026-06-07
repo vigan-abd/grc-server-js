@@ -3,7 +3,7 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const createGrapes = require('bfx-svc-test-helper/grapes')
+const createGrapes = require('@bitfinex/bfx-svc-test-helper/grapes')
 const { GrcHttpClient, GrcWsClient } = require('@thrivecoin/grc-client')
 const { GrcHttpWsWrk } = require('../')
 
@@ -54,7 +54,7 @@ describe('grc.http.ws.wrk.js tests', () => {
       () => httpClient.request(`ws:${svcName}`, 'ping', ['john', 'hi']),
       (err) => {
         assert.ok(err instanceof Error)
-        assert.strictEqual(err.message, 'ERR_REPLY_EMPTY')
+        assert.strictEqual(err.message, 'ERR_REQUEST_GENERIC: Upgrade Required')
         return true
       }
     )
