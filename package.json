@@ -30,6 +30,11 @@
     "grenache-nodejs-link": "^1.0.2",
     "grenache-nodejs-ws": "^1.0.0"
   },
+  "overrides": {
+    "diff": "^8.0.3",
+    "serialize-javascript": "^7.0.5",
+    "uuid": "^11.1.1"
+  },
   "devDependencies": {
     "@bitfinex/bfx-svc-test-helper": "^1.1.0",
     "@vigan-abd/grc-client": "git+https://github.com/vigan-abd/thc-grc-client-js.git",
