@@ -1,4 +1,4 @@
-# thc-grc-server-js
+# grc-server-js
 
 This package provides base classes for grenache server on node js through different transport layers.
 Currently it supports the following transport layers:
@@ -9,7 +9,7 @@ Currently it supports the following transport layers:
 
 You can simply extend the base transport classes and implement your methods, example:
 ```js
-const { GrcHttpWrk } = require('thc-grc-server')
+const { GrcHttpWrk } = require('@vigan-abd/grc-server')
 
 class MyCalcWorker extends GrcHttpWrk {
   add(a, b) {
@@ -28,7 +28,7 @@ await wrk.start()
 
 Then you could call your method through a sample client script like this:
 ```js
-const { GrcHttpClient } = require('thc-grc-client')
+const { GrcHttpClient } = require('@vigan-abd/grc-client')
 
 const client = new GrcHttpClient({
   grape: 'http://127.0.0.1:30001'
