@@ -4,7 +4,7 @@
 
 const assert = require('assert')
 const createGrapes = require('@bitfinex/bfx-svc-test-helper/grapes')
-const { GrcHttpClient, GrcWsClient } = require('@thrivecoin/grc-client')
+const { GrcHttpClient, GrcWsClient } = require('@vigan-abd/grc-client')
 const { GrcHttpWsWrk } = require('../')
 
 class SampleWrk extends GrcHttpWsWrk {

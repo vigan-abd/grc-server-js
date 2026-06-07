@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@bitfinex/bfx-svc-test-helper": "^1.1.0",
-    "@thrivecoin/grc-client": "git+https://github.com/vigan-abd/thc-grc-client-js.git",
+    "@vigan-abd/grc-client": "git+https://github.com/vigan-abd/thc-grc-client-js.git",
     "mocha": "^11.7.6",
     "node-fetch": "^2.7.0",
     "nyc": "^18.0.0",

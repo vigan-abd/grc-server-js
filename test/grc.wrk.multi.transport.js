@@ -6,7 +6,7 @@ const assert = require('assert')
 const createGrapes = require('@bitfinex/bfx-svc-test-helper/grapes')
 const sinon = require('sinon')
 const utils = require('util')
-const { GrcHttpClient, GrcWsClient } = require('@thrivecoin/grc-client')
+const { GrcHttpClient, GrcWsClient } = require('@vigan-abd/grc-client')
 const fetch = require('node-fetch')
 const { GrcHttpWsWrk } = require('../')
 
