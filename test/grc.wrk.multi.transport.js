@@ -8,7 +8,7 @@ const sinon = require('sinon')
 const utils = require('util')
 const { GrcHttpClient, GrcWsClient } = require('@vigan-abd/grc-client')
 const fetch = require('node-fetch')
-const { GrcHttpWsWrk } = require('../')
+const { GrcWrkMultiTransport, GrcHttpWsWrk } = require('../')
 
 class SampleWrk extends GrcHttpWsWrk {
   ping (from, message) {
@@ -162,5 +162,29 @@ describe('grc.http.ws.wrk.js tests', () => {
       'ERR_GRC_BAD_REQUEST',
       null
     ])
+  })
+
+  it('should apply default opts when omitted', () => {
+    const base = new GrcWrkMultiTransport({
+      name: svcName, ports: [7070, 7071], grape, prefixes: ['http', 'ws']
+    })
+
+    assert.strictEqual(base._announce, 15000)
+    assert.deepStrictEqual(base._conf, {})
+    assert.strictEqual(base._env, 'development')
+  })
+
+  it('should reject start when announce fails', async () => {
+    const failing = new SampleWrk({ name: svcName, ports: [7098, 7099], grape })
+    const fakeService = { listen: sinon.stub(), on: sinon.stub() }
+
+    sinon.stub(failing._link, 'start')
+    failing._peerServers.forEach((peerServer) => {
+      sinon.stub(peerServer, 'init')
+      sinon.stub(peerServer, 'transport').returns(fakeService)
+    })
+    sinon.stub(failing._link, 'announce').callsFake((name, port, opts, cb) => cb(new Error('ANNOUNCE_FAIL')))
+
+    await assert.rejects(() => failing.start(), /ANNOUNCE_FAIL/)
   })
 })

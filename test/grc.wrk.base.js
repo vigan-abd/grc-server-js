@@ -8,7 +8,7 @@ const sinon = require('sinon')
 const utils = require('util')
 const { GrcHttpClient } = require('@vigan-abd/grc-client')
 const fetch = require('node-fetch')
-const { GrcHttpWrk } = require('../')
+const { GrcWrkBase, GrcHttpWrk } = require('../')
 
 class SampleWrk extends GrcHttpWrk {
   async ping (from, message) {
@@ -148,5 +148,43 @@ describe('grc.wrk.base.js tests', () => {
       'ERR_GRC_BAD_REQUEST',
       null
     ])
+  })
+
+  it('should reject request coming with empty payload', async () => {
+    const res = await fetch(baseUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify([
+        '675830ae-0498-4036-9d79-92bb1d1f9803',
+        svcName,
+        null
+      ])
+    }).then((res) => res.json())
+
+    assert.deepStrictEqual(res, [
+      '675830ae-0498-4036-9d79-92bb1d1f9803',
+      'ERR_GRC_BAD_REQUEST',
+      null
+    ])
+  })
+
+  it('should apply default opts when omitted', () => {
+    const base = new GrcWrkBase({ name: svcName, port: 7070, grape })
+
+    assert.strictEqual(base._announce, 15000)
+    assert.deepStrictEqual(base._conf, {})
+    assert.strictEqual(base._env, 'development')
+  })
+
+  it('should reject start when announce fails', async () => {
+    const failing = new SampleWrk({ name: svcName, port: 7099, grape })
+    const fakeService = { listen: sinon.stub(), on: sinon.stub() }
+
+    sinon.stub(failing._link, 'start')
+    sinon.stub(failing._peerServer, 'init')
+    sinon.stub(failing._peerServer, 'transport').returns(fakeService)
+    sinon.stub(failing._link, 'announce').callsFake((name, port, opts, cb) => cb(new Error('ANNOUNCE_FAIL')))
+
+    await assert.rejects(() => failing.start(), /ANNOUNCE_FAIL/)
   })
 })
