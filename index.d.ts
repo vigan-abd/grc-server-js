@@ -143,3 +143,13 @@ export class GrcWrkMultiTransport extends GrcWrkBase {
 export class GrcHttpWsWrk extends GrcWrkMultiTransport {
   constructor (opts: GrcHttpWsWrkOpts)
 }
+
+declare const _default: {
+  GrcWrkBase: typeof GrcWrkBase
+  GrcHttpWrk: typeof GrcHttpWrk
+  GrcWsWrk: typeof GrcWsWrk
+  GrcWrkMultiTransport: typeof GrcWrkMultiTransport
+  GrcHttpWsWrk: typeof GrcHttpWsWrk
+}
+
+export default _default
