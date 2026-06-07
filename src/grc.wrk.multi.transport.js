@@ -1,7 +1,6 @@
 'use strict'
 
 const GrcWrkBase = require('./grc.wrk.base')
-const { extractPublicMethods } = require('./utils')
 
 class GrcWrkMultiTransport extends GrcWrkBase {
   /**
@@ -28,20 +27,12 @@ class GrcWrkMultiTransport extends GrcWrkBase {
     delete this._service
   }
 
-  async start () {
-    // set available methods
-    this._actions = new Map()
-    const skippedMethods = [
-      '__defineGetter__', '__defineSetter__', '__lookupGetter__', '__lookupSetter__',
-      'constructor', 'handler', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable',
-      'start', 'stop', 'toLocaleString', 'toString', 'valueOf'
-    ]
-    for (const key of extractPublicMethods(this)) {
-      if (skippedMethods.includes(key)) continue // disallow calling reseverd methods
-      if (key.startsWith('_')) continue // disallow calling methods that start with _ (private standard naming)
+  _isServiceSupported (serviceName) {
+    return this._names.includes(serviceName)
+  }
 
-      this._actions.set(key, true)
-    }
+  async start () {
+    this._registerActions()
 
     this._link.start()
 
@@ -65,26 +56,9 @@ class GrcWrkMultiTransport extends GrcWrkBase {
     }
   }
 
-  async handler (rid, serviceName, payload, handler) {
-    try {
-      if (!this._names.includes(serviceName)) throw new Error('ERR_GRC_SERVICE_NOT_SUPPORTED')
-      if (typeof payload !== 'object') throw new Error('ERR_GRC_BAD_REQUEST')
-
-      const { action, args } = payload
-      if (!this._actions.has(action)) throw new Error('ERR_GRC_ACTION_NOT_FOUND')
-      if (!Array.isArray(args)) throw new Error('ERR_GRC_ARGS_INVALID')
-
-      const resp = await this[action](...args)
-      handler.reply(null, resp)
-    } catch (err) {
-      console.error(new Date().toISOString(), err)
-      handler.reply(err)
-    }
-  }
-
   stop () {
-    for (const serviceName of this._names) {
-      this._link.stopAnnouncing(serviceName, this._port)
+    for (let i = 0; i < this._names.length; i++) {
+      this._link.stopAnnouncing(this._names[i], this._ports[i])
     }
     this._services.forEach(service => service.stop())
     this._peerServers.forEach(peerServer => peerServer.stop())

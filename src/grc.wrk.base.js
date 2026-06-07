@@ -3,6 +3,12 @@
 const Link = require('grenache-nodejs-link')
 const { extractPublicMethods } = require('./utils')
 
+const RESERVED_METHODS = [
+  '__defineGetter__', '__defineSetter__', '__lookupGetter__', '__lookupSetter__',
+  'constructor', 'handler', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable',
+  'start', 'stop', 'toLocaleString', 'toString', 'valueOf'
+]
+
 class GrcWrkBase {
   /**
    * @param {Object} opts
@@ -23,20 +29,29 @@ class GrcWrkBase {
     this._env = env
   }
 
-  async start () {
-    // set available methods
-    this._actions = new Map()
-    const skippedMethods = [
-      '__defineGetter__', '__defineSetter__', '__lookupGetter__', '__lookupSetter__',
-      'constructor', 'handler', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable',
-      'start', 'stop', 'toLocaleString', 'toString', 'valueOf'
-    ]
+  /**
+   * Collects the public methods exposed as callable grc actions.
+   */
+  _registerActions () {
+    this._actions = new Set()
     for (const key of extractPublicMethods(this)) {
-      if (skippedMethods.includes(key)) continue // disallow calling reseverd methods
+      if (RESERVED_METHODS.includes(key)) continue // disallow calling reserved methods
       if (key.startsWith('_')) continue // disallow calling methods that start with _ (private standard naming)
 
-      this._actions.set(key, true)
+      this._actions.add(key)
     }
+  }
+
+  /**
+   * @param {string} serviceName
+   * @returns {boolean} whether the worker serves the requested service name
+   */
+  _isServiceSupported (serviceName) {
+    return serviceName === this._name
+  }
+
+  async start () {
+    this._registerActions()
 
     this._link.start()
     this._peerServer.init() // should be inited on extended class
@@ -60,8 +75,8 @@ class GrcWrkBase {
 
   async handler (rid, serviceName, payload, handler) {
     try {
-      if (serviceName !== this._name) throw new Error('ERR_GRC_SERVICE_NOT_SUPPORTED')
-      if (typeof payload !== 'object') throw new Error('ERR_GRC_BAD_REQUEST')
+      if (!this._isServiceSupported(serviceName)) throw new Error('ERR_GRC_SERVICE_NOT_SUPPORTED')
+      if (!payload || typeof payload !== 'object') throw new Error('ERR_GRC_BAD_REQUEST')
 
       const { action, args } = payload
       if (!this._actions.has(action)) throw new Error('ERR_GRC_ACTION_NOT_FOUND')

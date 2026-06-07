@@ -82,12 +82,18 @@ export class GrcWrkBase {
   protected _announce: number
   protected _conf: Record<string, any>
   protected _env: string
-  protected _actions: Map<string, boolean>
+  protected _actions: Set<string>
   /** Transport peer server, must be initialized by the extending class */
   protected _peerServer: any
   protected _service: any
 
   constructor (opts: GrcWrkBaseOpts)
+
+  /** Collects the public methods exposed as callable grc actions. */
+  protected _registerActions (): void
+
+  /** Whether the worker serves the requested service name. */
+  protected _isServiceSupported (serviceName: string): boolean
 
   /** Registers actions, starts the link and begins announcing the service. */
   start (): Promise<void>
