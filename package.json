@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "grenache worker base for nodejs",
   "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src"
+  ],
   "scripts": {
     "coverage": "nyc --reporter=html mocha",
     "lint": "standard",
